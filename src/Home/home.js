@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import logo from '../logo.svg';
+import '../App.css';
+import Button from '@material-ui/core/Button';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <BrowserRouter>
-            <Route/>
-        </BrowserRouter>
-
-
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
@@ -19,12 +14,14 @@ class App extends Component {
           </p>
           <a
             className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
+            href="/zoom"
             rel="noopener noreferrer"
           >
-            Learn React
+           主页？
           </a>
+          <Button variant="contained" color="primary">
+                你好，世界
+            </Button>
         </header>
       </div>
     );
