@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter, HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 // 加载路由组件
-import Home from '../Home/home';
-import Zoom from '../Zoom/zoom';
+import Home from '../Page/Home/HomePage';
+import Zoom from '../Page/Zoom/zoom';
 
 import Test from '../test';
 
