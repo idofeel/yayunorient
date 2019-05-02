@@ -66,3 +66,36 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+
+
+
+## 全局注入主题
+### 可使用方法
+#### 路由下任意组件通过 props.theme.Root.setTheme(theme) 更改全局主题
+```
+// 案例
+const thme = {
+	    palette: {
+    		primary: {
+    			main: '#000', 
+    			light: '#757ce8',
+    			dark: '#002884',
+    			contrastText: '#000',
+    		},
+    		text: {
+    			primary: "#000",
+    			secondary: "#000",
+    		},
+    	},
+    	status: {
+    		danger: 'orange',
+    	},
+    	typography: {
+    		useNextVariants: true,
+    	}
+    
+    }
+props.theme.Root.setTheme(theme) //修改全局主题样式
+
+```

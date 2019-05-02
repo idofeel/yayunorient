@@ -35,7 +35,8 @@ const styles = theme => ({
         bottom: '0',
         left: '0',
         width: '100%',
-        background: 'RGBA(0,0,0,.5)'
+        textAlign: 'center'
+        // background: 'RGBA(0,0,0,.5)'
     },
     icon: {
         margin: theme.spacing.unit,
@@ -49,7 +50,7 @@ const styles = theme => ({
 class Swiper extends React.Component {
     tutorialSteps = this.props.swiperList || [];
     state = {
-        activeStep: 0,
+        activeStep: 0, //当前index
     };
 
     handleNext = () => {
@@ -70,8 +71,6 @@ class Swiper extends React.Component {
 
     render() {
         const { classes, theme } = this.props;
-
-
         const { activeStep } = this.state;
         const maxSteps = this.tutorialSteps.length;
         if (!maxSteps) return null;
@@ -80,8 +79,8 @@ class Swiper extends React.Component {
                 <AutoPlaySwipeableViews
                     axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
                     index={activeStep}
-                    autoplay={false}
-                    interval={3000}
+                    autoplay={true}
+                    interval={5000}
                     onChangeIndex={this.handleStepChange}
                     enableMouseEvents
                 >

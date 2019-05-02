@@ -13,23 +13,16 @@ export default createMuiTheme({
         },
         secondary: green,
         text: {
-            disabled: "#F6AA00",
-            hint: "#F6AA00",
             primary: "#F6AA00",
             secondary: "#F6AA00",
         },
     },
-
     status: {
         danger: 'orange',
     },
     typography: {
         useNextVariants: true,
-    },
-
-}
-
-
-);
+    }
+});
 
 
