@@ -1,11 +1,12 @@
 import React from 'react';
-import { Route, Switch, Redirect, HashRouter } from 'react-router-dom';
+import { Route, Switch, Redirect, HashRouter, BrowserRouter } from 'react-router-dom';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import createMuiThemefrom from '@material-ui/core/styles/createMuiTheme';
 import theme from '../utils/baseStyle';
 // 加载路由组件
 import Home from '../Page/Home/HomePage';
 import Zoom from '../Page/Zoom/zoom';
+import picView from '../components/pictureViewer';
 
 import Test from '../test';
 class Routers extends React.Component {
@@ -22,6 +23,7 @@ class Routers extends React.Component {
                 <Switch>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/zoom" component={Zoom} />
+                    <Route exact path="/picView" component={picView} />
                     <Route exact path="/test" component={Test} />
                     <Route>
                         <Redirect to="/test" />
