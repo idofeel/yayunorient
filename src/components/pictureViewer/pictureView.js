@@ -52,7 +52,7 @@ export default class extends React.Component {
 
         this.boundary = props.boundary === undefined ? false : props.boundary; //设置是否允许边界
     }
-    scales = [1, 2,2.6, 3]; //缩放比例
+    scales = [1, 2,2, 3]; //缩放比例
     currentScale = 1; //当前比例
     currentScaleIndex = 0; //当前比例下标
     touch = false; //是否触摸
