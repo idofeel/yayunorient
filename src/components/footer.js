@@ -1,6 +1,5 @@
 import React from "react";
 import { withTheme } from '@material-ui/core/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 // #F6AA00
 // 3C3C3C
 // AFAFAF

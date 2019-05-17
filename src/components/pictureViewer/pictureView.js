@@ -15,6 +15,23 @@ import React from 'react';
  * 
  * 
  */
+
+
+const style = {
+    visivbleArea: {
+        position: 'relative',
+        // margin: '20px',
+        flex: 1,
+        overflow: 'hidden'
+    },
+    pictureArea: {
+        position: 'absolute',
+        overflow: 'hidden',
+        transition: 'transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s'
+    }
+
+}
+const imgs = require('../../assets/images/3.jpg')
 export default class extends React.Component {
     constructor(props) {
         super(props);
@@ -29,16 +46,19 @@ export default class extends React.Component {
             originY: 0, // 放大Y中心点
             width: 0, //图片宽
             height: 0, //图片高
+            rows: []
         }
 
 
-        this.boundary = props.boundary === undefined ? true : props.boundary; //设置是否允许边界
+        this.boundary = props.boundary === undefined ? false : props.boundary; //设置是否允许边界
     }
-    scales = [1, 2, 3]; //缩放比例
+    scales = [1, 2,2.6, 3]; //缩放比例
     currentScale = 1; //当前比例
     currentScaleIndex = 0; //当前比例下标
     touch = false; //是否触摸
     touchTime = 0; //记录touch端是否双击 
+    visivbleWidth = 0;
+    visivbleHeight = 0;
     componentWillMount() {
         let { imgWidth, imgHeight } = this.getPictrueWidthAndHeight();
         this.setState({
@@ -57,6 +77,8 @@ export default class extends React.Component {
     initPicture() {
         let { visivbleWidth, visivbleHeight } = this.getVisivbleWidthAndHeight();
         let { imgWidth, imgHeight } = this.getPictrueWidthAndHeight();
+        visivbleWidth = visivbleWidth % 2 != 0 ? visivbleWidth - 1 : visivbleWidth;
+        visivbleWidth = visivbleHeight % 2 != 0 ? visivbleHeight - 1 : visivbleHeight;
 
         let WScale = visivbleWidth / imgWidth,
             HScale = visivbleHeight / imgHeight,
@@ -80,41 +102,75 @@ export default class extends React.Component {
             height,
             top,
             left,
-            originX: imgWidth / 2,
-            originY: imgHeight / 2
+            originX: this.currentScale * imgWidth / 2,
+            originY: this.currentScale * imgHeight / 2,
+            rows: this.visivbleMatrix(1, { width, height }),
         });
 
     }
 
     render() {
-        const { width, height, top, left, translateX, translateY, originX, originY } = this.state;
-        return <div className={'VisibleArea'}
-            ref="visivbleArea"
-            onMouseDown={this.touchStrat.bind(this)}
-            onTouchStart={this.touchStrat.bind(this)}
-            onTouchEnd={this.touchEnd.bind(this)}
-            onMouseUp={this.touchEnd.bind(this)}
-            onMouseMove={this.touchMove.bind(this)}
-            onTouchMove={this.touchMove.bind(this)}
-            onDoubleClick={this.doubleClick.bind(this)}
-            style={{ position: 'absolute', width: '100%', height: '100%', background: '#000', overflow: 'hidden', top: '0' }}>
+        const { width, height, top, left, translateX, translateY, originX, originY, scaleX, scaleY } = this.state;
 
-            <div className={'picView_big'}
-                style={{ position: 'absolute', width: width, height: height, top: top, left: left, transform: `scale(${this.state.scaleX},${this.state.scaleY}) translate(${translateX}, ${translateY})`, transformOrigin: `${originX}px ${originY}px`, transition: 'transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s' }}>
-                <img src={require('../../assets/images/3.jpg')} alt="" style={{ width: '100%', height: '100%', userSelect: 'none' }} draggable={false} />
-                <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
-                    {/* <img src={require('../../assets/images/2.jpg')} alt="" style={{ width: '100%', height: '100%', userSelect: 'none' }} draggable={false} /> */}
-
+        const pictrueStyle = {
+            width,
+            height,
+            top,
+            left,
+            transform: `scale(${scaleX},${scaleY}) translate(${translateX}, ${translateY})`,
+            transformOrigin: `${originX}px ${originY}px`,
+        };
+        return (
+            <div ref="visivbleArea" style={{ ...style.visivbleArea }} 
+                onMouseMove={this.touchMove.bind(this)} 
+                onTouchEnd={this.touchEnd.bind(this)} 
+                onMouseUp={this.touchEnd.bind(this)} 
+                onTouchMove={this.touchMove.bind(this)}
+                >
+                <div ref="imgContainer" onMouseDown={this.touchStrat.bind(this)}
+                    onTouchStart={this.touchStrat.bind(this)}
+                    onDoubleClick={this.doubleClick.bind(this)} style={{ ...style.pictureArea, ...pictrueStyle }}>
+                    {/* 缩略图 */}
+                    <img src={require('../../assets/images/2.jpg')} alt="" style={{ width: '100%', height: '100%', userSelect: 'none' }} draggable={false} />
+                    {/* 真实图片按比例加载区域图片*/}
+                    {/* <div style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
+                        <div style={{ ...imgStyle, background: `url(${imgs}) ` }} ></div>
+                    </div> */}
+                    {this.renderPictureBlock()}
                 </div>
+
+            </div>);
+
+    }
+    renderPictureBlock() {
+        let imgStyle = {
+            display: 'block',
+            userSelect: 'none',
+            overflow: 'hidden',
+            float: 'left',
+            fontSize: 0,
+            border: 'none',
+            margin: 0,
+            padding: 0,
+            background: '#000',
+            verticalAlign: 'middle',
+            position: 'absolute',
+        };
+        const distance = index => this.state.rows[0].w / this.state.scaleX * index;
+        // console.log(this.state.rows)
+        return this.scales.map((item, index) =>
+            <div className={`scalebox${item}${index}`} key={index} hidden={item !== this.state.scaleX} style={{ position: 'absolute', width: '100%', height: '100%', top: 0, left: 0 }}>
+                {this.state.rows.map((v, i) =>
+                    <div key={i} style={{ ...imgStyle, left: distance(i), top: 0, width: v.w / this.state.scaleX, height: v.h / this.state.scaleY }}>
+                        <img src={require('../../assets/images/3.jpg')} alt="" style={{ position: 'relative', left: -distance(i) + 'px', width: this.state.width, height: this.state.height }} draggable={false} /></div>
+                )}
             </div>
-        </div>
+        );
 
     }
     // 点击、触摸事件
     touchStrat(e) {
-        this.props.onDrag(true);
         this.touch = true;
-
         // 模拟双击事件
         if (e.type === 'touchstart') {
             if (Date.now() - this.touchTime < 300) {
@@ -122,9 +178,8 @@ export default class extends React.Component {
             }
             this.touchTime = Date.now();
         }
-
-        console.log(e.type)
         const pos = this.getClientPos(e);
+        // console.log(pos)
         this.x = pos.x + this.state.left * -1;
         this.y = pos.y + this.state.top * -1;
 
@@ -138,70 +193,130 @@ export default class extends React.Component {
     // 移动事件
     touchMove(e) {
         if (!this.touch) return;
+        this.props.onDrag(true);
         this.setState(this.setPicturePos(e));
     }
 
-    // 屏幕的宽度 - 图片的宽度 / 2 
+    // 双击事件
     doubleClick(e) {
+        const scale = this.scales[this.currentScaleIndex];
+        
+        const ImgBounding = this.refs.imgContainer.getBoundingClientRect()
+        // ImgBounding
+        // 
+        let { x, y } = this.getClientPos(e),originX,originY;
+
+        if(ImgBounding.x<0)originX = (-ImgBounding.x+x)/scale;
+
+        
+        // console.log(x) //280
+        // let realWidth = this.state.width * magnification;
+        // console.log(magnification)
+
+        console.log('ImgBounding',x,y)
+
         if (++this.currentScaleIndex === this.scales.length) this.currentScaleIndex = 0;
-        this.scale(this.scales[this.currentScaleIndex], this.setPicturePos(e));
+
+        const nextScale = this.scales[this.currentScaleIndex];
+        const origin = {originX:(-ImgBounding.x+x)/scale,originY:(-ImgBounding.y+y)/scale}
+        
+        console.log(this.visivbleHeight,nextScale)
+        // this.scale(this.scales[this.currentScaleIndex], e);
+        // let position = this.setPicturePos(e, origin);
+            this.setState({
+                // ...position,
+                ...origin,
+                scaleX: nextScale,
+                scaleY: nextScale,
+                rows: this.visivbleMatrix(nextScale),
+            },function(){
+                if(this.currentScaleIndex === 0) this.initPicture();
+            })
+    
+       
+
     }
 
-    // 缩放
-    scale(magnification, { left, top }) {
-        this.setState({
-            left,
-            top,
-            scaleX: magnification,
-            scaleY: magnification,
-        });
+    // // 等比例缩放（比例，）
+    // scale(magnification, e) {
+    
 
-    }
+
+
+
+
+    //     // this.state.width/
+
+    //     // let touchPicPos = realWidth / ImgBounding.x
+    //     // console.log(this.state.width/ x ) 
+    //     // let { left, top } = this.setPicturePos(e, origin);
+    //     this.setState({
+    //         // left, top,
+    //         scaleX: magnification,
+    //         scaleY: magnification,
+    //         rows: this.visivbleMatrix(magnification),
+    //         // ...origin
+    //     }, function () {
+
+    //         // console.log(this.refs.imgContainer.getBoundingClientRect())
+
+    //     });
+
+    // }
+
     // 设置图片显示的位置
-    setPicturePos(e) {
+    setPicturePos(e, origin = {}) {
         let { x, y } = this.getClientPos(e),
             left = (this.x - x) * -1,
             top = (this.y - y) * -1,
-            { visivbleWidth, visivbleHeight } = this.getVisivbleWidthAndHeight(),
+            { visivbleWidth, visivbleHeight } = this,
             scale = this.scales[this.currentScaleIndex],
-            realWidth = this.state.width * scale,
-            realHeight = this.state.height * scale;
+            realWidth = this.state.width * scale, //实际显示的宽度
+            realHeight = this.state.height * scale,
+            originX = origin.originX || this.state.originX,
+            originY = origin.originY || this.state.originY;
+        // 鼠标点击的中心作为计算
+        // 获取剩余的宽度 图片真实显示的宽度 - 图片初始默认的高度 
+        let minLeft = originX * scale - originX,
+            minTop = originY * scale - originY,
+            maxTop = -(realHeight - visivbleHeight - minTop),
+            maxLeft = -(realWidth - visivbleWidth - minLeft);
+        // console.log(minLeft, realWidth - this.state.width)
+        // console.log('左边最小距离:' + x, this.state.originX * scale - this.state.originX)
+        // console.log(this.state.width - originX,originXs)
+        // left + visivbleWidth = realWidth
+        // left = realWidth - visivbleWidth;
 
-        let minLeft = (visivbleWidth - realWidth) / 2,
-            maxLeft = -minLeft,
-            minTop = (visivbleHeight - realHeight) / 2,
-            maxTop = -minTop,
-            scaleWidth = (realWidth - this.state.width) / 2,
-            scaleHeight = (realHeight - this.state.height) / 2;
+        // 左边大小this.state.originX * scale 
+        // 右边大小 this.state.width - 左边大小
+        let leftArea = this.state.originX * scale;
 
+        // console.log(this.state.originX)
+
+        // console.log(this.state.originX * scale + (this.state.width - this.state.originX * scale))
+        // left = realWidth - this.state.width - originX+originXs
+        // console.log(realWidth, this.state.originX * scale - this.state.originX)
+        // console.log(this.state.width - x + x);
+        // console.log('左边最小距离:' + (this.state.originX * scale - this.state.originX), (this.state.width - this.state.originX) * scale)
         if (this.boundary) {
             // 可视区域宽度大于图片真实宽度 限制左右边界
             if (visivbleWidth > realWidth) {
-                maxLeft = minLeft * 2 + scaleWidth
-                minLeft = scaleWidth
                 left = left <= minLeft ? minLeft : left >= maxLeft ? maxLeft : left;
             } else {
-                left = left >= maxLeft ? maxLeft : left <= minLeft ? minLeft : left;
+                // console.log(maxLeft,minLeft)
+                left = left <= maxLeft ? maxLeft : left >= minLeft ? minLeft : left;
             }
-
             // 可视区域高度大于图片真实高度 限制上下边界
             if (visivbleHeight > realHeight) {
-                maxTop = minTop * 2 + scaleHeight
-                minTop = scaleHeight
                 top = top <= minTop ? minTop : top >= maxTop ? maxTop : top;
             } else {
-                maxTop = (realHeight - scaleHeight) / 2
-                minTop = maxTop / 2;
-
-                top = top >= maxTop ? maxTop : top <= minTop ? minTop : top;
-
+                top = top <= maxTop ? maxTop : top >= minTop ? minTop : top;
             }
         }
-
         // 返回图片应该存在的位置
         return { top, left }
-
     }
+
     // 获取当前触达的坐标点
     getClientPos(e) {
         let x = e.clientX,
@@ -215,7 +330,7 @@ export default class extends React.Component {
     // 获取可显示区域的宽高
     getVisivbleWidthAndHeight() {
         let { visivbleArea } = this.refs;
-        console.log(`可视区域：${visivbleArea.clientWidth} * ${visivbleArea.clientHeight}`)
+        // console.log(`可视区域：${visivbleArea.clientWidth} * ${visivbleArea.clientHeight}`)
         return {
             visivbleWidth: visivbleArea.clientWidth,
             visivbleHeight: visivbleArea.clientHeight
@@ -226,11 +341,32 @@ export default class extends React.Component {
     getPictrueWidthAndHeight() {
         let imgWidth = 1000,
             imgHeight = 400;
-        console.log(`图片尺寸：${imgWidth} * ${imgHeight}`)
+        // console.log(`图片尺寸：${imgWidth} * ${imgHeight}`)
         return {
             imgWidth,
             imgHeight
         }
+    }
+    // 可显示区域的矩阵
+    visivbleMatrix(scale, picWh) {
+        let { width, height } = picWh || this.state;
+        width *= scale;
+        height *= scale;
+        // let matrix = [];
+
+        let row = Math.floor(width / 100),
+            lastRow = width % 100,
+            cols = height * scale / 100;
+        let matrix = [];
+        for (let i = 0; i < row; i++) {
+            matrix[i] = { w: 100, h: 100 };
+        }
+        matrix[matrix.length] = { w: lastRow, h: 100 };
+
+        // console.log(matrix)
+        return matrix
+
+
     }
     // 窗口发生改变执行的回调
     resize() {

@@ -16,7 +16,7 @@ const styles = theme => ({
         height: '100%',
     },
     paperFullScreen: {
-        backgroud: '#000'
+        // backgroud: '#000',
     },
     AppBar: {
         background: 'none',
@@ -69,7 +69,7 @@ class FullScreenDialog extends React.Component {
         const { classes = {} } = this.props;
         return (
             <Dialog
-                classes={{ paper: classes.paper }}
+                classes={{ paper: classes.paper}}
                 fullScreen open={this.state.open}
                 onClose={this.handleClose}
                 // onClick={this.handleClose}
