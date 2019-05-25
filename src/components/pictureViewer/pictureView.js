@@ -1,5 +1,5 @@
 import React from 'react';
-require('./pictureView.css');
+import './pictureView.css'
 
 
 /**
@@ -24,28 +24,9 @@ require('./pictureView.css');
  *      bounding    类型：Boolean     true 有边界，以可显示区域的边为边界；false 无边界，可任意拖拽
  *                  类型：Obejct      {offsetLeft: Number, offsetTop: Number} 图片在屏幕中剩余的宽度/高度 (最大值为图片的宽度高度，超出按图片最大值)
  *      
- *        
- * 
- * 
- * 
- * 
  */
 
 
-const style = {
-    visivbleArea: {
-        position: 'relative',
-        // margin: '20px',
-        flex: 1,
-        overflow: 'hidden'
-    },
-    pictureArea: {
-        position: 'absolute',
-        overflow: 'hidden',
-        // transition: 'all  .2s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s'
-    }
-
-}
 const imgs = require('../../assets/images/3.jpg')
 export default class extends React.Component {
     constructor(props) {
@@ -173,8 +154,13 @@ export default class extends React.Component {
 
                     {this.renderPictureBlock()}
                 </div>
+                {this.renderTools()}
+
             </div>);
 
+    }
+
+    renderTools() {
     }
     renderPictureBlock() {
 
@@ -197,6 +183,7 @@ export default class extends React.Component {
         );
 
     }
+
     // 点击、触摸事件
     touchStrat(e) {
         this.touch = true;
@@ -331,7 +318,11 @@ export default class extends React.Component {
             visivbleHeight: visivbleArea.clientHeight
         }
     }
+    genCenterPoint() {
+        const { visivbleWidth, visivbleHeight } = this.getVisivbleWidthAndHeight();
 
+
+    }
     getShowWidthAndHeight() {
         return {
             showWidth: this.scales[this.currentScaleIndex] * this.initWidth,
