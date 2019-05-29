@@ -6,20 +6,20 @@ import {
     Switch,
     Redirect
 } from 'react-router-dom';
-
-import App from '../components/test/App';
-import Home from '../Page/index';
-
+import Routers from './routers';
 
 class Root extends Component {
     render() {
         return (
             <HashRouter>
                 <Switch>
-                    <Route exact path="/test" component={App} />
-                    <Route exact path="/" component={Home} />
+                    {Routers.map((item, index) => {
+                        return <Route key={index} exact path={item.path} render={props => {
+                            return <item.components  {...props} />
+                        }} />
+                    })}
                     <Route>
-                        <Redirect to="/test" />
+                        <Redirect to="/" />
                     </Route>
                 </Switch>
             </HashRouter>

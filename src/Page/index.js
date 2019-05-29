@@ -8,7 +8,7 @@ class HomeBanner extends React.Component {
     render() {
         return <Carousel autoplay>
             <div>
-                <h3>1</h3>
+                <img src={require('../assets/images/3.jpg')} />
             </div>
             <div>
                 <h3>2</h3>
